@@ -27,8 +27,8 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm">Log In</Button>
-          <Button size="sm">Get Started</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>Log In</Button>
+          <Button size="sm" onClick={() => navigate("/auth")}>Get Started</Button>
         </div>
       </div>
     </motion.nav>
