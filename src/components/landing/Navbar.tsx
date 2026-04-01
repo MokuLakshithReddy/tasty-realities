@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Box } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
@@ -25,8 +27,8 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm">Log In</Button>
-          <Button size="sm">Get Started</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>Log In</Button>
+          <Button size="sm" onClick={() => navigate("/auth")}>Get Started</Button>
         </div>
       </div>
     </motion.nav>
