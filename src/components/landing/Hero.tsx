@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Scan, Eye, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Scene3D from "@/components/viewer/Scene3D";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   return (
