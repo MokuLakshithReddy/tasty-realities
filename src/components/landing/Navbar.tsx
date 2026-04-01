@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Box } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
