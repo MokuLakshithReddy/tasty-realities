@@ -15,6 +15,7 @@ declare namespace JSX {
         "shadow-softness"?: string;
         exposure?: string;
         "environment-image"?: string;
+        [key: string]: unknown;
       },
       HTMLElement
     >;
