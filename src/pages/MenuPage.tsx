@@ -241,14 +241,32 @@ const MenuPage = () => {
                     <ShoppingCart className="h-5 w-5" />
                     Add to Order
                   </Button>
-                  <Button variant="outline" size="lg" className="gap-2">
-                    <Eye className="h-5 w-5" />
-                    AR View
-                  </Button>
+                  {selectedItem.model_url && (
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setShowAR(true)}
+                    >
+                      <Smartphone className="h-5 w-5" />
+                      AR View
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* AR Viewer */}
+      <AnimatePresence>
+        {showAR && selectedItem?.model_url && (
+          <ARViewer
+            modelUrl={selectedItem.model_url}
+            itemName={selectedItem.name}
+            onClose={() => setShowAR(false)}
+          />
         )}
       </AnimatePresence>
     </div>
