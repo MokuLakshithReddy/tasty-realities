@@ -23,6 +23,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/menu/:slug" element={<MenuPage />} />
+          <Route path="/viewer" element={<ProductViewer />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
