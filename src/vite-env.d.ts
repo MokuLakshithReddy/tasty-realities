@@ -11,6 +11,10 @@ declare namespace JSX {
         "camera-controls"?: boolean;
         "auto-rotate"?: boolean;
         poster?: string;
+        "shadow-intensity"?: string;
+        "shadow-softness"?: string;
+        exposure?: string;
+        "environment-image"?: string;
       },
       HTMLElement
     >;
