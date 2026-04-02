@@ -33,6 +33,7 @@ const ProductViewer = () => {
   const [selectedItem, setSelectedItem] = useState<ViewerItem>(demoItems[0]);
   const [activeCategory, setActiveCategory] = useState("Appetizers");
   const [showQR, setShowQR] = useState(false);
+  const [showAR, setShowAR] = useState(false);
 
   const categories = useMemo(() => [...new Set(demoItems.map((i) => i.category))], []);
   const filteredItems = demoItems.filter((i) => i.category === activeCategory);
