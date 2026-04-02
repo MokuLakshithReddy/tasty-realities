@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Box, Eye, ShoppingCart, ArrowLeft, Flame, Leaf, Star } from "lucide-react";
+import { Box, Eye, ShoppingCart, ArrowLeft, Flame, Leaf, Star, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Scene3D from "@/components/viewer/Scene3D";
+import ARViewer from "@/components/viewer/ARViewer";
 
 interface MenuItem {
   id: string;
