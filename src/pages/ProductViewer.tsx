@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ModelViewer from "@/components/viewer/ModelViewer";
 import QRCodeGenerator from "@/components/viewer/QRCodeGenerator";
+import ARViewer from "@/components/viewer/ARViewer";
 
 interface ViewerItem {
   id: string;
@@ -32,6 +33,7 @@ const ProductViewer = () => {
   const [selectedItem, setSelectedItem] = useState<ViewerItem>(demoItems[0]);
   const [activeCategory, setActiveCategory] = useState("Appetizers");
   const [showQR, setShowQR] = useState(false);
+  const [showAR, setShowAR] = useState(false);
 
   const categories = useMemo(() => [...new Set(demoItems.map((i) => i.category))], []);
   const filteredItems = demoItems.filter((i) => i.category === activeCategory);
@@ -182,7 +184,12 @@ const ProductViewer = () => {
                     <Eye className="h-4 w-4" /> View in 3D
                   </Button>
                   {selectedItem.model_url && (
-                    <Button variant="outline" size="sm" className="gap-1.5">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5"
+                      onClick={() => setShowAR(true)}
+                    >
                       <Smartphone className="h-4 w-4" /> AR View
                     </Button>
                   )}
@@ -199,6 +206,17 @@ const ProductViewer = () => {
           </div>
         </div>
       </main>
+
+      {/* AR Viewer Overlay */}
+      <AnimatePresence>
+        {showAR && selectedItem.model_url && (
+          <ARViewer
+            modelUrl={selectedItem.model_url}
+            itemName={selectedItem.name}
+            onClose={() => setShowAR(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

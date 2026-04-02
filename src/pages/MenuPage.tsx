@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Box, Eye, ShoppingCart, ArrowLeft, Flame, Leaf, Star } from "lucide-react";
+import { Box, Eye, ShoppingCart, ArrowLeft, Flame, Leaf, Star, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Scene3D from "@/components/viewer/Scene3D";
+import ARViewer from "@/components/viewer/ARViewer";
 
 interface MenuItem {
   id: string;
@@ -61,6 +62,7 @@ const MenuPage = () => {
   const [items, setItems] = useState<MenuItem[]>(demoItems);
   const [activeCategory, setActiveCategory] = useState<string>("1");
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [showAR, setShowAR] = useState(false);
   const [isDemo, setIsDemo] = useState(true);
 
   useEffect(() => {
@@ -239,14 +241,32 @@ const MenuPage = () => {
                     <ShoppingCart className="h-5 w-5" />
                     Add to Order
                   </Button>
-                  <Button variant="outline" size="lg" className="gap-2">
-                    <Eye className="h-5 w-5" />
-                    AR View
-                  </Button>
+                  {selectedItem.model_url && (
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setShowAR(true)}
+                    >
+                      <Smartphone className="h-5 w-5" />
+                      AR View
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* AR Viewer */}
+      <AnimatePresence>
+        {showAR && selectedItem?.model_url && (
+          <ARViewer
+            modelUrl={selectedItem.model_url}
+            itemName={selectedItem.name}
+            onClose={() => setShowAR(false)}
+          />
         )}
       </AnimatePresence>
     </div>

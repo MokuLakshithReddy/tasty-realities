@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import ModelUploader from "@/components/dashboard/ModelUploader";
 import {
   Box, Plus, LogOut, BarChart3, UtensilsCrossed, QrCode,
   Settings, Pencil, Trash2, Eye, ChevronRight, TrendingUp,
-  Users, Scan
+  Users, Scan, FileBox
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -373,16 +374,28 @@ const Dashboard = () => {
                     animate={{ opacity: 1 }}
                     className="bg-gradient-card rounded-xl border border-border/50 p-4 flex items-center justify-between group hover:border-primary/30 transition-all"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center">
-                        <UtensilsCrossed className="h-5 w-5 text-muted-foreground" />
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center shrink-0">
+                        {item.model_url ? (
+                          <FileBox className="h-5 w-5 text-accent" />
+                        ) : (
+                          <UtensilsCrossed className="h-5 w-5 text-muted-foreground" />
+                        )}
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <h4 className="font-medium">{item.name}</h4>
                         <p className="text-sm text-muted-foreground">${item.price}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="w-36">
+                        <ModelUploader
+                          restaurantId={restaurant!.id}
+                          menuItemId={item.id}
+                          currentModelUrl={item.model_url}
+                          onUploadComplete={() => loadData()}
+                        />
+                      </div>
                       {item.model_url && (
                         <Badge variant="outline" className="text-accent border-accent/30">3D</Badge>
                       )}
