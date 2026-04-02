@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ModelViewer from "@/components/viewer/ModelViewer";
 import QRCodeGenerator from "@/components/viewer/QRCodeGenerator";
+import ARViewer from "@/components/viewer/ARViewer";
 
 interface ViewerItem {
   id: string;
