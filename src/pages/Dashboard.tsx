@@ -6,11 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import ModelUploader from "@/components/dashboard/ModelUploader";
 import {
   Box, Plus, LogOut, BarChart3, UtensilsCrossed, QrCode,
   Settings, Pencil, Trash2, Eye, ChevronRight, TrendingUp,
-  Users, Scan
+  Users, Scan, FileBox
 } from "lucide-react";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
