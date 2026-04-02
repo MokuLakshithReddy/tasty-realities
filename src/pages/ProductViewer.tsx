@@ -206,6 +206,17 @@ const ProductViewer = () => {
           </div>
         </div>
       </main>
+
+      {/* AR Viewer Overlay */}
+      <AnimatePresence>
+        {showAR && selectedItem.model_url && (
+          <ARViewer
+            modelUrl={selectedItem.model_url}
+            itemName={selectedItem.name}
+            onClose={() => setShowAR(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
