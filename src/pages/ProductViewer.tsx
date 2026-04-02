@@ -184,7 +184,12 @@ const ProductViewer = () => {
                     <Eye className="h-4 w-4" /> View in 3D
                   </Button>
                   {selectedItem.model_url && (
-                    <Button variant="outline" size="sm" className="gap-1.5">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5"
+                      onClick={() => setShowAR(true)}
+                    >
                       <Smartphone className="h-4 w-4" /> AR View
                     </Button>
                   )}
