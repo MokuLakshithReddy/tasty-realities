@@ -62,6 +62,7 @@ const MenuPage = () => {
   const [items, setItems] = useState<MenuItem[]>(demoItems);
   const [activeCategory, setActiveCategory] = useState<string>("1");
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [showAR, setShowAR] = useState(false);
   const [isDemo, setIsDemo] = useState(true);
 
   useEffect(() => {
