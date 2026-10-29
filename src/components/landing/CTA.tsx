@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const CTA = () => {
+  const navigate = useNavigate();
   return (
     <section className="py-32 relative">
       <div className="absolute inset-0 bg-gradient-hero" />
@@ -22,11 +24,11 @@ const CTA = () => {
             Join 500+ restaurants already using AR menus to boost engagement and revenue. Start your free 14-day trial today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="group text-lg px-10 py-6 glow-primary">
+            <Button size="lg" className="group text-lg px-10 py-6 glow-primary" onClick={() => navigate("/auth")}>
               Start Free Trial
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-10 py-6">
+            <Button variant="outline" size="lg" className="text-lg px-10 py-6" onClick={() => navigate("/menu/demo")}>
               Book a Demo
             </Button>
           </div>

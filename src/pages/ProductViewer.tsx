@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Box, Eye, Flame, Leaf, Star, QrCode, Smartphone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import ModelViewer from "@/components/viewer/ModelViewer";
 import QRCodeGenerator from "@/components/viewer/QRCodeGenerator";
 import ARViewer from "@/components/viewer/ARViewer";
@@ -180,7 +181,11 @@ const ProductViewer = () => {
                   {selectedItem.description}
                 </p>
                 <div className="flex gap-2">
-                  <Button size="sm" className="gap-1.5">
+                  <Button
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => toast.info(`Viewing ${selectedItem.name} in 3D mode`)}
+                  >
                     <Eye className="h-4 w-4" /> View in 3D
                   </Button>
                   {selectedItem.model_url && (
