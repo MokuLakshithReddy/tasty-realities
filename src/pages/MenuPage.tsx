@@ -1,13 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { Box, Eye, ShoppingCart, ArrowLeft, Flame, Leaf, Star, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import ModelViewer from "@/components/viewer/ModelViewer";
+import Scene3D from "@/components/viewer/Scene3D";
 import ARViewer from "@/components/viewer/ARViewer";
-import { recordAnalyticsEvent } from "@/lib/analytics";
 
 interface MenuItem {
   id: string;
@@ -66,8 +65,13 @@ const MenuPage = () => {
   const [showAR, setShowAR] = useState(false);
   const [isDemo, setIsDemo] = useState(true);
 
-  const loadRestaurant = useCallback(async () => {
-    if (!slug || slug === "demo") return;
+  useEffect(() => {
+    if (slug && slug !== "demo") {
+      loadRestaurant();
+    }
+  }, [slug]);
+
+  const loadRestaurant = async () => {
     const { data: rest } = await supabase
       .from("restaurants")
       .select("*")
@@ -93,22 +97,8 @@ const MenuPage = () => {
         .eq("is_available", true)
         .order("sort_order");
       if (menuItems) setItems(menuItems);
-
-      // Record menu_view or qr_scan
-      const urlParams = new URLSearchParams(window.location.search);
-      const isQrScan = urlParams.get("source") === "qr" || urlParams.has("table");
-      recordAnalyticsEvent({
-        eventType: isQrScan ? "qr_scan" : "menu_view",
-        restaurantId: rest.id,
-      });
     }
-  }, [slug]);
-
-  useEffect(() => {
-    if (slug && slug !== "demo") {
-      loadRestaurant();
-    }
-  }, [slug, loadRestaurant]);
+  };
 
   const filteredItems = items.filter((item) => item.category_id === activeCategory);
 
@@ -201,14 +191,7 @@ const MenuPage = () => {
                   {/* 3D Preview Button */}
                   {item.model_url && (
                     <button
-                      onClick={() => {
-                        setSelectedItem(item);
-                        recordAnalyticsEvent({
-                          eventType: "view_3d",
-                          restaurantId: restaurant?.id,
-                          menuItemId: item.id,
-                        });
-                      }}
+                      onClick={() => setSelectedItem(item)}
                       className="w-20 h-20 rounded-xl bg-primary/10 border border-primary/20 flex flex-col items-center justify-center gap-1 shrink-0 hover:bg-primary/20 transition-colors"
                     >
                       <Eye className="h-5 w-5 text-primary" />
@@ -244,7 +227,7 @@ const MenuPage = () => {
               </div>
 
               <div className="flex-1">
-                <ModelViewer modelUrl={selectedItem.model_url} itemName={selectedItem.name} />
+                <Scene3D />
               </div>
 
               <div className="p-6 glass rounded-t-3xl">
@@ -254,13 +237,7 @@ const MenuPage = () => {
                 </div>
                 <p className="text-muted-foreground text-sm mb-4">{selectedItem.description}</p>
                 <div className="flex gap-3">
-                  <Button
-                    className="flex-1 gap-2"
-                    size="lg"
-                    onClick={() => {
-                      toast.success(`Added ${selectedItem.name} to order!`);
-                    }}
-                  >
+                  <Button className="flex-1 gap-2" size="lg">
                     <ShoppingCart className="h-5 w-5" />
                     Add to Order
                   </Button>
@@ -269,14 +246,7 @@ const MenuPage = () => {
                       variant="outline"
                       size="lg"
                       className="gap-2"
-                      onClick={() => {
-                        setShowAR(true);
-                        recordAnalyticsEvent({
-                          eventType: "view_ar",
-                          restaurantId: restaurant?.id,
-                          menuItemId: selectedItem.id,
-                        });
-                      }}
+                      onClick={() => setShowAR(true)}
                     >
                       <Smartphone className="h-5 w-5" />
                       AR View

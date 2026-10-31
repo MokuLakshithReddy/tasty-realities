@@ -79,31 +79,36 @@ const ARViewer = ({ modelUrl, itemName, onClose }: ARViewerProps) => {
       </div>
 
       <div className="flex-1 relative">
-        <model-viewer
-          src={actualUrl}
-          alt={`3D model of ${itemName}`}
-          ar={true}
-          ar-modes="webxr scene-viewer quick-look"
-          camera-controls={true}
-          auto-rotate={true}
-          shadow-intensity="1"
-          shadow-softness="1"
-          exposure="1"
-          environment-image="neutral"
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "transparent",
-          }}
-        >
-          <button
-            slot="ar-button"
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-medium text-sm flex items-center gap-2 shadow-lg"
-          >
-            <Smartphone className="h-4 w-4" />
-            Place on Surface
-          </button>
-        </model-viewer>
+        {(() => {
+          const props: any = {
+            src: actualUrl,
+            alt: `3D model of ${itemName}`,
+            ar: true,
+            "ar-modes": "webxr scene-viewer quick-look",
+            "camera-controls": true,
+            "auto-rotate": true,
+            "shadow-intensity": "1",
+            "shadow-softness": "1",
+            exposure: "1",
+            "environment-image": "neutral",
+            style: {
+              width: "100%",
+              height: "100%",
+              backgroundColor: "transparent",
+            },
+          };
+          return (
+            <model-viewer {...props}>
+              <button
+                slot="ar-button"
+                className="absolute bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-medium text-sm flex items-center gap-2 shadow-lg"
+              >
+                <Smartphone className="h-4 w-4" />
+                Place on Surface
+              </button>
+            </model-viewer>
+          );
+        })()}
       </div>
 
       <div className="p-4 glass flex gap-3 justify-center">

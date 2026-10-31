@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
 const plans = [
   {
@@ -51,7 +50,6 @@ const plans = [
 ];
 
 const Pricing = () => {
-  const navigate = useNavigate();
   return (
     <section className="py-32 relative" id="pricing">
       <div className="container mx-auto px-6">
@@ -98,7 +96,6 @@ const Pricing = () => {
                 className="w-full mb-8"
                 variant={plan.popular ? "default" : "outline"}
                 size="lg"
-                onClick={() => navigate("/auth")}
               >
                 Get Started
               </Button>

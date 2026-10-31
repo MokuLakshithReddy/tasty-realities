@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRequireAuth } from "@/hooks/useAuth";
@@ -7,13 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import ModelUploader from "@/components/dashboard/ModelUploader";
-import QRCodeGenerator from "@/components/viewer/QRCodeGenerator";
 import {
   Box, Plus, LogOut, BarChart3, UtensilsCrossed, QrCode,
   Settings, Pencil, Trash2, Eye, ChevronRight, TrendingUp,
-  Users, Scan, FileBox, Star, Check, FolderPlus
+  Users, Scan, FileBox
 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
@@ -56,27 +54,19 @@ const Dashboard = () => {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [analyticsCounts, setAnalyticsCounts] = useState({ qrScans: 0, views3d: 0, viewsAr: 0 });
   const [activeTab, setActiveTab] = useState<"overview" | "menu" | "qr" | "settings">("overview");
   const [showAddItem, setShowAddItem] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
-
-  // Editing Item State
-  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
-  const [showEditItem, setShowEditItem] = useState(false);
-
-  // Category Management State
-  const [showCategoryManager, setShowCategoryManager] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [editingCategoryName, setEditingCategoryName] = useState("");
 
   // New item form
   const [newItem, setNewItem] = useState({ name: "", description: "", price: "", category_id: "" });
   const [newRestaurant, setNewRestaurant] = useState({ name: "", slug: "" });
 
-  const loadData = useCallback(async () => {
-    if (!user) return;
+  useEffect(() => {
+    if (user) loadData();
+  }, [user]);
+
+  const loadData = async () => {
     const { data: rest } = await supabase
       .from("restaurants")
       .select("*")
@@ -85,27 +75,16 @@ const Dashboard = () => {
 
     if (rest) {
       setRestaurant(rest);
-      const [{ data: items }, { data: cats }, { data: events }] = await Promise.all([
+      const [{ data: items }, { data: cats }] = await Promise.all([
         supabase.from("menu_items").select("*").eq("restaurant_id", rest.id).order("sort_order"),
         supabase.from("categories").select("*").eq("restaurant_id", rest.id).order("sort_order"),
-        supabase.from("analytics_events").select("event_type").eq("restaurant_id", rest.id),
       ]);
       if (items) setMenuItems(items);
       if (cats) setCategories(cats);
-      if (events) {
-        const qrScans = events.filter((e) => e.event_type === "qr_scan").length;
-        const views3d = events.filter((e) => e.event_type === "view_3d").length;
-        const viewsAr = events.filter((e) => e.event_type === "view_ar").length;
-        setAnalyticsCounts({ qrScans, views3d, viewsAr });
-      }
     } else {
       setShowSetup(true);
     }
-  }, [user]);
-
-  useEffect(() => {
-    if (user) loadData();
-  }, [user, loadData]);
+  };
 
   const createRestaurant = async () => {
     if (!newRestaurant.name || !newRestaurant.slug) return;
@@ -150,85 +129,9 @@ const Dashboard = () => {
     loadData();
   };
 
-  const updateMenuItem = async () => {
-    if (!editingItem) return;
-    const { error } = await supabase.from("menu_items").update({
-      name: editingItem.name,
-      description: editingItem.description,
-      price: editingItem.price,
-      category_id: editingItem.category_id,
-      is_available: editingItem.is_available,
-      is_featured: editingItem.is_featured,
-    }).eq("id", editingItem.id);
-
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Item updated!");
-    setShowEditItem(false);
-    setEditingItem(null);
-    loadData();
-  };
-
-  const toggleItemStatus = async (item: MenuItem, field: "is_available" | "is_featured", value: boolean) => {
-    const { error } = await supabase.from("menu_items").update({
-      [field]: value,
-    }).eq("id", item.id);
-
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success(`${field === "is_available" ? "Availability" : "Featured status"} updated`);
-    loadData();
-  };
-
   const deleteMenuItem = async (id: string) => {
     await supabase.from("menu_items").delete().eq("id", id);
     toast.success("Item deleted");
-    loadData();
-  };
-
-  // Category CRUD
-  const addCategory = async () => {
-    if (!newCategoryName.trim() || !restaurant) return;
-    const { error } = await supabase.from("categories").insert({
-      restaurant_id: restaurant.id,
-      name: newCategoryName.trim(),
-      sort_order: categories.length,
-    });
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Category added!");
-    setNewCategoryName("");
-    loadData();
-  };
-
-  const updateCategory = async () => {
-    if (!editingCategory || !editingCategoryName.trim()) return;
-    const { error } = await supabase.from("categories").update({
-      name: editingCategoryName.trim(),
-    }).eq("id", editingCategory.id);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Category updated!");
-    setEditingCategory(null);
-    setEditingCategoryName("");
-    loadData();
-  };
-
-  const deleteCategory = async (id: string) => {
-    const { error } = await supabase.from("categories").delete().eq("id", id);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Category deleted!");
     loadData();
   };
 
@@ -300,9 +203,9 @@ const Dashboard = () => {
 
   const stats = [
     { label: "Menu Items", value: menuItems.length, icon: UtensilsCrossed, color: "text-primary" },
-    { label: "QR Scans Today", value: analyticsCounts.qrScans, icon: Scan, color: "text-accent" },
-    { label: "3D Views", value: analyticsCounts.views3d, icon: Eye, color: "text-primary" },
-    { label: "AR Sessions", value: analyticsCounts.viewsAr, icon: TrendingUp, color: "text-accent" },
+    { label: "QR Scans Today", value: 0, icon: Scan, color: "text-accent" },
+    { label: "3D Views", value: 0, icon: Eye, color: "text-primary" },
+    { label: "AR Sessions", value: 0, icon: TrendingUp, color: "text-accent" },
   ];
 
   const tabs = [
@@ -392,145 +295,34 @@ const Dashboard = () => {
         {/* Menu Tab */}
         {activeTab === "menu" && (
           <div>
-            <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-display font-bold">Menu Items</h2>
-              <div className="flex gap-2">
-                <Dialog open={showCategoryManager} onOpenChange={setShowCategoryManager}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline">
-                      <FolderPlus className="h-4 w-4 mr-2" /> Categories
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="bg-card border-border max-w-md">
-                    <DialogHeader>
-                      <DialogTitle className="font-display">Manage Categories</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="flex gap-2">
-                        <Input
-                          value={newCategoryName}
-                          onChange={(e) => setNewCategoryName(e.target.value)}
-                          placeholder="New category name"
-                        />
-                        <Button onClick={addCategory}>Add</Button>
-                      </div>
-                      <div className="space-y-2 max-h-60 overflow-y-auto">
-                        {categories.map((cat) => (
-                          <div key={cat.id} className="flex items-center justify-between p-2 rounded-lg bg-secondary/50">
-                            {editingCategory?.id === cat.id ? (
-                              <div className="flex items-center gap-2 flex-1 mr-2">
-                                <Input
-                                  value={editingCategoryName}
-                                  onChange={(e) => setEditingCategoryName(e.target.value)}
-                                />
-                                <Button size="sm" onClick={updateCategory}><Check className="h-4 w-4" /></Button>
-                              </div>
-                            ) : (
-                              <span className="font-medium text-sm">{cat.name}</span>
-                            )}
-                            <div className="flex gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setEditingCategory(cat);
-                                  setEditingCategoryName(cat.name);
-                                }}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="sm" onClick={() => deleteCategory(cat.id)}>
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-
-                <Dialog open={showAddItem} onOpenChange={setShowAddItem}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" /> Add Item
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="bg-card border-border">
-                    <DialogHeader>
-                      <DialogTitle className="font-display">Add Menu Item</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <Label>Name</Label>
-                        <Input
-                          value={newItem.name}
-                          onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-                          placeholder="Dish name"
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label>Description</Label>
-                        <Input
-                          value={newItem.description}
-                          onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
-                          placeholder="A brief description"
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label>Price ($)</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          value={newItem.price}
-                          onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
-                          placeholder="0.00"
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label>Category</Label>
-                        <select
-                          value={newItem.category_id}
-                          onChange={(e) => setNewItem({ ...newItem, category_id: e.target.value })}
-                          className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        >
-                          <option value="">Select category</option>
-                          {categories.map((cat) => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <Button onClick={addMenuItem} className="w-full">Add Item</Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-
-            {/* Edit Item Dialog */}
-            <Dialog open={showEditItem} onOpenChange={setShowEditItem}>
-              <DialogContent className="bg-card border-border">
-                <DialogHeader>
-                  <DialogTitle className="font-display">Edit Menu Item</DialogTitle>
-                </DialogHeader>
-                {editingItem && (
+              <Dialog open={showAddItem} onOpenChange={setShowAddItem}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" /> Add Item
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border">
+                  <DialogHeader>
+                    <DialogTitle className="font-display">Add Menu Item</DialogTitle>
+                  </DialogHeader>
                   <div className="space-y-4">
                     <div>
                       <Label>Name</Label>
                       <Input
-                        value={editingItem.name}
-                        onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
+                        value={newItem.name}
+                        onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                        placeholder="Dish name"
                         className="mt-1"
                       />
                     </div>
                     <div>
                       <Label>Description</Label>
                       <Input
-                        value={editingItem.description || ""}
-                        onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
+                        value={newItem.description}
+                        onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+                        placeholder="A brief description"
                         className="mt-1"
                       />
                     </div>
@@ -539,16 +331,17 @@ const Dashboard = () => {
                       <Input
                         type="number"
                         step="0.01"
-                        value={editingItem.price}
-                        onChange={(e) => setEditingItem({ ...editingItem, price: parseFloat(e.target.value) || 0 })}
+                        value={newItem.price}
+                        onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
+                        placeholder="0.00"
                         className="mt-1"
                       />
                     </div>
                     <div>
                       <Label>Category</Label>
                       <select
-                        value={editingItem.category_id || ""}
-                        onChange={(e) => setEditingItem({ ...editingItem, category_id: e.target.value || null })}
+                        value={newItem.category_id}
+                        onChange={(e) => setNewItem({ ...newItem, category_id: e.target.value })}
                         className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       >
                         <option value="">Select category</option>
@@ -557,25 +350,11 @@ const Dashboard = () => {
                         ))}
                       </select>
                     </div>
-                    <div className="flex items-center justify-between pt-2">
-                      <Label>Available</Label>
-                      <Switch
-                        checked={editingItem.is_available}
-                        onCheckedChange={(checked) => setEditingItem({ ...editingItem, is_available: checked })}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label>Featured</Label>
-                      <Switch
-                        checked={editingItem.is_featured}
-                        onCheckedChange={(checked) => setEditingItem({ ...editingItem, is_featured: checked })}
-                      />
-                    </div>
-                    <Button onClick={updateMenuItem} className="w-full">Save Changes</Button>
+                    <Button onClick={addMenuItem} className="w-full">Add Item</Button>
                   </div>
-                )}
-              </DialogContent>
-            </Dialog>
+                </DialogContent>
+              </Dialog>
+            </div>
 
             {menuItems.length === 0 ? (
               <div className="bg-gradient-card rounded-xl border border-border/50 p-12 text-center">
@@ -608,14 +387,7 @@ const Dashboard = () => {
                         <p className="text-sm text-muted-foreground">${item.price}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <div className="flex items-center gap-2 border-r border-border/50 pr-3">
-                        <Switch
-                          checked={item.is_available}
-                          onCheckedChange={(checked) => toggleItemStatus(item, "is_available", checked)}
-                        />
-                        <span className="text-xs text-muted-foreground">{item.is_available ? "Available" : "Hidden"}</span>
-                      </div>
+                    <div className="flex items-center gap-2 shrink-0">
                       <div className="w-36">
                         <ModelUploader
                           restaurantId={restaurant!.id}
@@ -627,16 +399,6 @@ const Dashboard = () => {
                       {item.model_url && (
                         <Badge variant="outline" className="text-accent border-accent/30">3D</Badge>
                       )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingItem(item);
-                          setShowEditItem(true);
-                        }}
-                      >
-                        <Pencil className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                      </Button>
                       <Button variant="ghost" size="sm" onClick={() => deleteMenuItem(item.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
@@ -652,17 +414,12 @@ const Dashboard = () => {
         {activeTab === "qr" && (
           <div className="max-w-md mx-auto text-center">
             <div className="bg-gradient-card rounded-2xl border border-border/50 p-8">
+              <QrCode className="h-16 w-16 text-primary mx-auto mb-4" />
               <h3 className="text-xl font-display font-bold mb-2">Your Menu QR Code</h3>
               <p className="text-muted-foreground text-sm mb-6">
                 Share this link or print the QR code for your tables
               </p>
-              <div className="mb-6 flex justify-center">
-                <QRCodeGenerator
-                  url={`${window.location.origin}/menu/${restaurant?.slug}`}
-                  size={200}
-                />
-              </div>
-              <div className="glass rounded-lg p-4 mb-4 w-full">
+              <div className="glass rounded-lg p-4 mb-4">
                 <code className="text-sm text-primary break-all">
                   {window.location.origin}/menu/{restaurant?.slug}
                 </code>
