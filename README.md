@@ -1,5 +1,8 @@
 # Tasty Realities — 3D / AR Restaurant Menu Experience
 
+[![Forks](https://img.shields.io/github/forks/MokuLakshithReddy/tasty-realities?style=flat-square)](https://github.com/MokuLakshithReddy/tasty-realities/forks) [![Open Issues](https://img.shields.io/github/issues/MokuLakshithReddy/tasty-realities?style=flat-square)](https://github.com/MokuLakshithReddy/tasty-realities/issues)
+
+
 A web application concept for restaurants that lets guests browse digital menus and inspect dishes in 3D or augmented reality from a browser. The product flow is designed around a QR entry point, menu browsing, a 3D viewer, and restaurant-side menu/model management.
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=111)](https://react.dev/)
