@@ -2,12 +2,12 @@
 
 Tasty Realities is a restaurant-menu experience concept that combines a public digital menu with interactive 3D food models and an augmented-reality viewing flow. Restaurant owners can manage menu content and upload GLB/GLTF assets through a dashboard backed by Supabase.
 
-![GitHub stars](https://img.shields.io/github/stars/MokuLakshithReddy/tasty-realities?style=flat-square&label=stars)
-![GitHub forks](https://img.shields.io/github/forks/MokuLakshithReddy/tasty-realities?style=flat-square&label=forks)
-![Open issues](https://img.shields.io/github/issues/MokuLakshithReddy/tasty-realities?style=flat-square&label=open%20issues)
-![Last commit](https://img.shields.io/github/last-commit/MokuLakshithReddy/tasty-realities?style=flat-square)
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
-![Tests](https://img.shields.io/badge/tests-Vitest%20%2B%20Playwright-informational)
+[![Stars](https://img.shields.io/github/stars/MokuLakshithReddy/tasty-realities?style=flat-square)](https://github.com/MokuLakshithReddy/tasty-realities/stargazers)
+[![Forks](https://img.shields.io/github/forks/MokuLakshithReddy/tasty-realities?style=flat-square)](https://github.com/MokuLakshithReddy/tasty-realities/forks)
+[![Open Issues](https://img.shields.io/github/issues/MokuLakshithReddy/tasty-realities?style=flat-square)](https://github.com/MokuLakshithReddy/tasty-realities/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/MokuLakshithReddy/tasty-realities?style=flat-square)](https://github.com/MokuLakshithReddy/tasty-realities/commits/main)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![3D](https://img.shields.io/badge/3D-model--viewer-4B9CD3)](https://modelviewer.dev/)
 
 ## Why it matters
 
@@ -44,13 +44,15 @@ flowchart TD
 - QR-code generation and sharing components.
 - Dedicated viewer route with sample dishes for demonstrating the 3D/AR interface.
 
-## Demo and integration boundaries
+## Main routes
 
-- The public menu can fall back to local demo menu items when no restaurant data is returned.
-- The dedicated `/viewer` route uses hard-coded example dishes; it is a presentation route, not a live restaurant-specific product feed.
-- Demo menu items use a `demo` model marker and show a placeholder instead of launching a real AR asset.
-- AR placement requires an uploaded and accessible GLB/GLTF model and a compatible browser/device.
-- Supabase features require a correctly configured project, database schema, storage bucket, and access policies. This README does not claim that a production Supabase project is provisioned.
+| Route | Purpose |
+| --- | --- |
+| `/` | Product landing page |
+| `/auth` | Sign up and sign in |
+| `/dashboard` | Restaurant setup and menu management |
+| `/menu/:slug` | Public restaurant menu |
+| `/viewer` | Demo 3D/AR product viewer |
 
 ## Technology
 
@@ -82,20 +84,13 @@ npm run lint
 npm test
 ```
 
-Playwright is also included in the development dependencies for browser-level testing.
+## Demo and integration boundaries & limitations
 
-## Main routes
-
-| Route | Purpose |
-| --- | --- |
-| `/` | Product landing page |
-| `/auth` | Sign up and sign in |
-| `/dashboard` | Restaurant setup and menu management |
-| `/menu/:slug` | Public restaurant menu |
-| `/viewer` | Demo 3D/AR product viewer |
-
-## Evidence status
-
-No public model-viewing performance, conversion-rate, device-compatibility, or restaurant-adoption benchmark is published in this repository.
+- The landing page describes potential benefits such as higher order value; these are product copy, not independently measured benchmark results.
+- The public menu can fall back to local demo menu items when no restaurant data is returned.
+- The dedicated `/viewer` route uses hard-coded example dishes; it is a presentation route, not a live restaurant-specific product feed.
+- Demo menu items use a `demo` model marker and show a placeholder instead of launching a real AR asset.
+- AR placement requires an uploaded and accessible GLB/GLTF model and a compatible browser/device with AR support.
+- Supabase features require a correctly configured project, database schema, storage bucket, and access policies.
 
 [Browse the source](https://github.com/MokuLakshithReddy/tasty-realities)
